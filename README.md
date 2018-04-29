@@ -1,7 +1,7 @@
-#add_key.sh
+# add_key.sh
 Helps you to generate ssh keys for remote hosts.
 
-##Description
+## Description
 This tool helps the user during ssh key generation.
 
 You run the tool an it interactively ask for necessary informations:
@@ -19,7 +19,7 @@ By now new keys are put in _$HOME/.ssh_, and key informations in _$HOME/.ssh/con
 Every new is key a **4096 bit RSA** key.
 
 
-##Usage
+## Usage
 Run **bash add_key.sh**, then follow given request. A new  key is generated if 
 every argument is correct.
 
