@@ -108,7 +108,7 @@ check_url(){
 echo "Generating a new RSA-4096 KEY"
 
 #store name for key file.
-echo -n "Insert new key name: "HOSTNAME="${HOSTNAME,,}"
+echo -n "Insert new key name: "
 read KEY
 
 [[  "$KEY" ]] || die "Key file name is mandatory"
