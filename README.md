@@ -28,7 +28,7 @@ Given _urls_ are checked, the tool tries to ping it, in case of failure ask you 
 When add_key.sh ask for confirm you are supposed to answer _Y or y_ (it's case insensitive) to confirm
 and _N or n_ to refuse. There's a _default_ answer that is the **capitalized** letter in the prompt.
 
-##Bugs
+## Bugs
 
 Feel free to contact me for every problem.
 
