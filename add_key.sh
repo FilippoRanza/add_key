@@ -1,5 +1,23 @@
 #! /bin/bash
-
+#
+#   add_key - helps to generate a ssh key.
+#
+#   Copyright (c) 2018 Filippo Ranza <filipporanza@gmail.com>
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#
 DEFAULT_KEY_SZ='4096'
 DEFAULT_FOLDER="$HOME/.ssh"
 DEFAULT_OUTPUT_FILE="$DEFAULT_FOLDER/config"
@@ -44,22 +62,31 @@ test_url(){
 # $1 question
 # $2 die message
 # $3 default answer
-# $4 YES answer 
+ 
 confirm_or_die(){
+    
+    #create default answer help
+    DEF_ANS="${3,,}"
+    if [[ "$DEF_ANS" == "n" ]] ; then
+        ANS_MSG="[y/N]"
+    else
+        ANS_MSG="[Y/n]"
+    fi
 
-    echo "$1"
-    echo "default: $3"
-    echo "confirm: $4"
+    #add, if not present, ?
+    echo "$1" | egrep '\?$' &> /dev/null  && QST="$1" || QST="$1?"
+    
+    echo "$QST$ANS_MSG"
 
     read ANS
     #lowercase ANS
-    ANS=${ANS,,}
+    ANS="${ANS,,}"
     
-    if [[ -z "$ANS" ]] ; then
-        [[ "$3" == "$4" ]] || die "$2"
-    else
-        [[ "$ANS" == "$3" ]] || die "$2"
-    fi
+    
+    ANS="${ANS:-$DEF_ANS}"
+    
+    [[ "$ANS" == "y" ]] || die "$2"
+
 }
 
 
@@ -71,9 +98,9 @@ check_url(){
     tmp="$?"
     
     if [[ "$tmp" == "$NO_INTERET" ]] ; then
-        confirm_or_die "there's no internet connection, continue without testing $1?" "no test available" "Y" "Y"
+        confirm_or_die "there's no internet connection, continue without testing $1?" "no test available" "Y"
      elif [[ "$tmp" == "$NOT_REACHABLE_HOST" ]] ; then
-        confirm_or_die "$1 is unreachable, but there's internet connection, continue anyway?" "$1 in not valid" "N" "Y"
+        confirm_or_die "$1 is unreachable, but there's internet connection, continue anyway?" "$1 in not valid" "N" 
      fi
 }
 
@@ -81,7 +108,7 @@ check_url(){
 echo "Generating a new RSA-4096 KEY"
 
 #store name for key file.
-echo -n "Insert new key name: "
+echo -n "Insert new key name: "HOSTNAME="${HOSTNAME,,}"
 read KEY
 
 [[  "$KEY" ]] || die "Key file name is mandatory"
@@ -111,8 +138,10 @@ read HOSTNAME
 if [[ "$HOSTNAME" =~ ((25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9]) ]] ; then
     true 
 elif [[ "$HOSTNAME" =~ ((([1-9a-fA-F]{1,4}:){7}|::|([1-9a-fA-F]{1,4}:){1,6}::)([1-9a-fA-F]{1,4})) ]] ; then
+    HOSTNAME="${HOSTNAME^^}"
     true
 elif [[ "$HOSTNAME" =~ ([a-zA-Z]([a-zA-Z]\.)+[a-zA-Z]) ]]; then
+    HOSTNAME="${HOSTNAME,,}"
     check_url "$HOSTNAME"
 else 
     die "$HOSTNAME is nor an IPv4, IPv6 or url"
@@ -135,7 +164,7 @@ elif [[ "$PORT_NO" ]] ; then
     die "$PORT_NO is not a number"
 fi
     
-echo -n "Insert user name(can be empty): "
+echo -n "Insert remote user name(can be empty): "
 read RUSER
 
 echo -n "A Comment(can be empty):"
